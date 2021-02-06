@@ -12,55 +12,125 @@
 
 </head>
 <body>
+  
+  <div class="container-fulid">
+  
+    <div class="container-fulid">
+      <div class="row">
+        <div class="col">
+          <nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
+            <span class="navbar-brand">らくらくお客様の声</span>
+            <div class="btn-group">
+              <button class="btn btn-success rounded"
+              data-bs-toggle="modal" data-bs-target="#masterModal"
+              >マスターを登録する</button>
+              <button 
+              class="btn btn-success rounded bg-info text-dark" data-bs-toggle="modal" data-bs-target="#settingModal">設定</button>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
 
-  <div class="container">
+
     <div class="row">
-      <div class="col">
-        <input type="file" id="file" accept=".csv" multiple>
+      <div class="col mx-5">
+        
+        <select class="form-select" aria-label="Default select example" id="chara"
+        data-bs-toggle="tooltip" data-bs-placement="bottom" title="結果が表示されない時は文字コードを変えてみてください"
+        >
+          <option value="utf-8">utf-8(default)</option>
+          <option value="shift-jis">shift-jis</option>
+        </select>
+
+        <div class="card rounded bg-light input-area mx-auto my-3">
+          <div class="card-text drop-text">
+            please drag & drop <span>CSV!</span>
+          </div>
+          <input type="file" id="file" accept=".csv" class="bg-dark input-tag" multiple>
+          <span class="card-title bg-dark input-pointer" id="input-pointer">
+            「お客様の声」を読み込む
+          </span>
+        </div>
+
       </div>
     </div>   
-    <div class="row">
-      <div class="col">
-        <textarea name="mail" id="mail" cols="50" rows="10"></textarea>
-      </div>
-    </div>   
-    <div class="row">
-      <div class="col">
-        <div class="row d-flex">
-          <div class="col">
-            <label for="starMsg">書き出しの文章</label>
-            <button id="sBtn" class="btn btn-primary rounded-pill">保存する</button>
+
+    <div class="row d-flex justify-content-center" id="results">
+      <p class="text-center" style="margin-top: 50px; font-size: 60px; color: lightgray;">Results Here!</p>
+    </div>
+
+  </div>
+
+  <!-- 設定Modal -->
+  <div class="modal fade" id="settingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">文章の編集</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="col-5">
+            <div class="row d-flex">
+              <div class="col d-flex justify-content-between">
+                <label for="starMsg">書き出しの文章</label>
+              </div>
+            </div>
+            <textarea name="startMsg" id="startMsg" cols="50" rows="5"></textarea>
+          
+            <div class="row d-flex">
+              <div class="col d-flex justify-content-between">
+                <label for="lastMsg">結びの文章</label>
+              </div>
+            </div>
+            <textarea name="lastMsg" id="lastMsg" cols="50" rows="5"></textarea>
           </div>
         </div>
-        <textarea name="startMsg" id="startMsg"  cols="50" rows="5"></textarea>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" data-bs-dismiss="modal" 
+          class="btn btn-primary" id="changeMsg">Save changes</button>
+        </div>
       </div>
-    </div>   
-    <div class="row">
-      <div class="col">
-        <div class="row d-flex">
-          <div class="col">
-            <label for="lastMsg">結びの文章</label>
-            <button id="lBtn" class="btn btn-primary rounded-pill">保存する</button>
+    </div>
+  </div>
+
+  <!-- マスター登録Modal -->
+  <div class="modal fade" id="masterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">マスターを更新する</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="card rounded bg-light input-area mx-auto my-3">
+            <div class="card-text drop-text">
+              please drag & drop <span>CSV!</span>
+            </div>
+            <input type="file" id="master" accept=".csv" class="bg-light input-tag">
+            <span class="card-title bg-danger input-pointer">
+              「ASマスター」を読み込む
+            </span>
           </div>
         </div>
-        <textarea name="lastMsg" id="lastMsg" cols="50" rows="5"></textarea>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
-    </div>   
+    </div>
   </div>
 
 
 
-<!-- Optional JavaScript; choose one of the two! -->
 
-<!-- Option 1: Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"
+  integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
+  integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
   <script src="./main.js"></script>
 
 </body>
