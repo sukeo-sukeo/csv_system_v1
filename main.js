@@ -11,43 +11,35 @@ const tooltip = new bootstrap.Tooltip(chara);
 chara.addEventListener('click', () =>  tooltip.toggle());
 chara.addEventListener('change', e => charaCode = e.target.value);
 
-const needKeys = [
-  "コード",
-  "JAN1",
-  "帳合",
-  "原価",
-  "基本売価",
-  "TC/DC区分",
-  "商品名",
-  "部門",
-  "容量",
-  "入数", //発注単位
-  "入数2", //箱入り数
-  "メーカーコード",
-  "度数",
-  "扱区",
-  "発注終了日",
-];
-
-
-
 //csv読み込み処理
 [...fileInput].forEach(input => {
   input.addEventListener("change", (e) => {
     const fileReader = new FileReader();
     const file = e.target.files[0];
-    console.log(file.name);
     fileReader.readAsText(file, charaCode);
     fileReader.onload = (e) => {
       const result = e.target.result;
-      if (file.name.match(/お客様の声/)) {
+      // 店コード入力
+      if (file.name.includes('店')) {
+        const shopDict = new Map();
+        result.split('\n').forEach(r => {
+          const key = r.split(',')[0];
+          const val = r.split(',')[1];
+          shopDict.set(key, val);
+        });
+        const shopCode = JSON.stringify([...shopDict]);
+        localStorage.setItem('shopcode', shopCode);
+      }
+      // お客様の声入力
+      if (file.name.includes('お客様の声')) {
         const keyCnt = 9;  
         const valCnt = [8, 19];  
         const delIndex = [6, 7, 11, 12, 15, 19, 24, 26, 29];
-        const dataList = formatData(result, keyCnt, valCnt, delIndex);
+        const dataList = formatMainData(result, keyCnt, valCnt, delIndex);
         createMailMessage(dataList);
       };
-      if (file.name.match('マスターフル')) {
+      // マスターフル入力
+      if (file.name.includes('マスターフル')) {
         const { dataList: dataList, updated: updated } = formatMasterData(result);
         console.log(dataList);
         console.log(updated);
@@ -79,7 +71,7 @@ const formatMasterData = (dataString) => {
   }
 };
 
-const formatData = (dataString, keyCnt, valCnt, delIndex) => {
+const formatMainData = (dataString, keyCnt, valCnt, delIndex) => {
   const dataArry = dataString.split("\n");
   const key_value = (dataArry) => {
     const k = dataArry
@@ -130,7 +122,6 @@ const formatData = (dataString, keyCnt, valCnt, delIndex) => {
 }
 
 const createMailMessage = (dataList) => {
-  console.log(dataList);
   const startMsg = document.getElementById("startMsg").value;
   const lastMsg = document.getElementById("lastMsg").value;
   const results = document.getElementById('results');
@@ -152,24 +143,31 @@ const createMailMessage = (dataList) => {
       const copyBtn = document.createElement('button');
       copyBtn.setAttribute("id", `copy_${i}`);
       copyBtn.setAttribute('class', 'btn btn-outline-dark rounded-pill');
-      copyBtn.setAttribute('style', 'margin-left:5px;font-size:12px;');
+      // copyBtn.setAttribute('style', 'margin-left:5px;font-size:12px;');
+      copyBtn.setAttribute('style', 'font-size:12px;position:absolute;top:60px;right:50px;');
       copyBtn.textContent = 'copy';
+      const searchBtn = document.createElement('button');
+      searchBtn.setAttribute('class', 'btn rounded-pill');
+      searchBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+  <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+</svg>`;
       const textArea = document.createElement('textarea');
       textArea.setAttribute("id", `mail_${i}`);
       textArea.setAttribute("class", `rounded bg-light`);
       textArea.setAttribute("cols", "50");
       textArea.setAttribute("rows", "15");
-      const contents = `${startMsg}\n\n${d.get("ＪＡＮ")} ${d.get("商品名")} ${d.get(
-        "必要本数"
-      )}本\n${d.get("店舗Ｎｏ")}店より問い合わせがございました。\n\n${lastMsg}`;
+      const shopCode = getshopCodes().get(d.get("店舗Ｎｏ"));
+      const contents = `${startMsg}\n\n【JAN】 ${d.get("ＪＡＮ")}\n【商品名】 ${d.get("商品名")}\n【容量】 ${d.get('容量')}\n【必要数】 ${d.get("必要本数")}本\n\n${shopCode}店より上記内容で問い合わせがございました。\n\n${lastMsg}`;
+      // const contents = `${startMsg}\n\nカテゴリ: ${d.get('カテゴリ')}\nJAN: ${d.get("ＪＡＮ")}\n商品名: ${d.get("商品名")}\n容量: ${d.get('容量')}\n必要数: ${d.get("必要本数")}本\n店舗名: ${shopCode}\n\n上記内容で問い合わせがございました。\n\n${lastMsg}`;
       textArea.textContent = contents;
-      const adress = 'sumple@test.com'
-      const subject = '商品のお問い合わせ'
+      const adress = `sumple@test.com`
+      const subject = `商品のお問い合わせ(${d.get('商品名')})`
       const mailto = `mailto:${adress}?subject=${subject}&amp;body=${contents}`
       headeing.setAttribute('href', mailto);
       results.appendChild(col).appendChild(textArea);
       col.insertBefore(headeing, textArea);
       col.insertBefore(copyBtn, textArea);
+      col.insertBefore(searchBtn, textArea);
      
       copyBtn.addEventListener('click', e => {
         textArea.select();
@@ -195,7 +193,36 @@ document.getElementById('changeMsg')
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("startMsg").value = localStorage.getItem("startMsg");
   document.getElementById("lastMsg").value = localStorage.getItem("lastMsg");
+  const shopCode = getshopCodes();
+  createShopCodeDOM(shopCode);
 });
+
+const getshopCodes = () => {
+  const tmp = localStorage.getItem("shopcode");
+   // JSのオブジェクト形式に戻す.
+  const items = JSON.parse(tmp);
+   // Mapを作成する.
+  const shopCodeDict = new Map(items);
+  return shopCodeDict;
+}
+
+const createShopCodeDOM = (shopCodeDict) => {
+  const tbody = document.getElementById("shopDataContainer");
+  shopCodeDict.forEach((val, key) => {
+    if (key === "店コード" || key === "" || key === "0") {
+      return;
+    }
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    const td = document.createElement("td");
+    th.appendChild(document.createTextNode(key));
+    td.appendChild(document.createTextNode(val));
+    th.setAttribute("scope", "row");
+    tr.appendChild(th);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+}
 
 const initElements = (...args) => {
   args.forEach((arg) => {
