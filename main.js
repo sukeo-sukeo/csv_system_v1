@@ -41,8 +41,7 @@ chara.addEventListener('change', e => charaCode = e.target.value);
       // マスターフル入力
       if (file.name.includes('マスターフル')) {
         const { dataList: dataList, updated: updated } = formatMasterData(result);
-        console.log(dataList);
-        console.log(updated);
+        insertDB_masterData(dataList);
       }
     };
   });
@@ -64,7 +63,7 @@ const formatMasterData = (dataString) => {
     });
     masterArry.push(dict);
   });
-
+  masterArry.pop();
   return {
     dataList: masterArry,
     updated: updated
@@ -195,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("lastMsg").value = localStorage.getItem("lastMsg");
   const shopCode = getshopCodes();
   createShopCodeDOM(shopCode);
+  createDB();
 });
 
 const getshopCodes = () => {

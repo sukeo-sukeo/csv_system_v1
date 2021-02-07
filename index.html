@@ -22,14 +22,20 @@
           <nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
             <span class="navbar-brand">らくらくお客様の声</span>
             <div class="btn-group">
-              <button class="btn btn-success rounded"
+              <button class="navbtn btn btn-success rounded"
               data-bs-toggle="modal" data-bs-target="#shopcodeModal"
               >店舗情報</button>
-              <button class="btn btn-success rounded"
+              <button class="navbtn btn btn-danger rounded"
               data-bs-toggle="modal" data-bs-target="#masterModal"
               >マスターを登録する</button>
               <button 
-              class="btn btn-success rounded bg-info text-dark" data-bs-toggle="modal" data-bs-target="#settingModal">設定</button>
+              class="navbtn btn rounded  text-light" data-bs-toggle="modal" data-bs-target="#settingModal">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-three-dots"
+                viewBox="0 0 16 16">
+                <path
+                  d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+              </svg>
+            </button>
             </div>
           </nav>
         </div>
@@ -166,6 +172,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"
   integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
   <script src="./setting.js"></script>
+  <script src="./db.js"></script>
   <script src="./main.js"></script>
 
 </body>
