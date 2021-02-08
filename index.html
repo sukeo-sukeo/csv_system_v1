@@ -51,15 +51,13 @@
         <select class="form-select" aria-label="Default select example" id="chara"
         data-bs-toggle="tooltip" data-bs-placement="bottom" title="結果が表示されない時は文字コードを変えてみてください"
         >
-          <option value="utf-8">utf-8(default)</option>
-          <option value="shift-jis">shift-jis</option>
         </select>
 
         <div class="card rounded bg-light input-area mx-auto my-3">
           <div class="card-text drop-text">
             please drag & drop <span>CSV!</span>
           </div>
-          <input type="file" id="file" accept=".csv" class="bg-dark input-tag" multiple>
+          <input type="file" id="file" accept=".csv,.txt" class="bg-dark input-tag" multiple>
           <span class="card-title bg-dark input-pointer" id="input-pointer">
             「お客様の声」を読み込む
           </span>
@@ -121,7 +119,7 @@
             <div class="card-text drop-text">
               please drag & drop <span>CSV!</span>
             </div>
-            <input type="file" id="master" accept=".csv" class="bg-light input-tag">
+            <input type="file" id="master" accept=".csv,.txt" class="bg-light input-tag">
             <span class="card-title bg-danger input-pointer">
               「ASマスター」を読み込む
             </span>
