@@ -6,9 +6,7 @@ const fileInput = document.getElementsByClassName('input-tag');
 const masterInput = document.getElementById("master");
 const chara = document.getElementById('chara');
 let charaCode = localStorage.getItem("csvsystem_characode") || 'utf-8';
-const tooltip = new bootstrap.Tooltip(chara);
 
-chara.addEventListener('click', () =>  tooltip.toggle());
 chara.addEventListener('change', e => {
   charaCode = e.target.value;
   localStorage.setItem("csvsystem_characode", charaCode);
@@ -26,7 +24,7 @@ chara.addEventListener('change', e => {
       if (file.name.includes('お客様の声')) {
         const keyCnt = 9;  
         const valCnt = [8, 19];  
-        const delIndex = [6, 7, 11, 12, 15, 19, 24, 26, 29];
+        const delIndex = [0, 7, 8, 12, 13, 16, 20, 25, 27, 30];
         const dataList = formatMainData(result, keyCnt, valCnt, delIndex);
         console.log(dataList);
         createMailMessage(dataList);
@@ -42,7 +40,7 @@ chara.addEventListener('change', e => {
         });
         const shopCode = JSON.stringify([...shopDict]);
         localStorage.setItem('csvsystem_shopcode', shopCode);
-        createShopCodeDOM(shopCode);
+        createShopCodeDOM(shopDict);
         return;
       }
       // マスターフル入力
@@ -61,8 +59,6 @@ const formatMasterData = (dataString) => {
   const keysArry = dataArry[3].split(',');
   dataArry.splice(0, 4);
   const valsArry = dataArry;
-  console.log(valsArry[0].split(',')[1]);
-  console.log(typeof valsArry[0].split(',')[1]);
   let masterArry = [];
   valsArry.forEach(valArry => {
     const vals = valArry.split(',');
@@ -81,6 +77,7 @@ const formatMasterData = (dataString) => {
 
 const formatMainData = (dataString, keyCnt, valCnt, delIndex) => {
   const dataArry = dataString.split("\n");
+  dataArry.splice(0, 8);
   const key_value = (dataArry) => {
     const k = dataArry
       .map((d, i) => {
@@ -95,7 +92,14 @@ const formatMainData = (dataString, keyCnt, valCnt, delIndex) => {
     const v = dataArry
       .map((d, i) => {
         if (i > valCnt[0] && i < valCnt[1]) {
-          return d.split(",");
+          const splited_val = d.split(',');
+          splited_val.shift();
+          const shopCode = splited_val[1];
+          if (shopCode.length !== 0 && shopCode.length !== 6) {
+            const addStr = '00'
+            splited_val[1] = shopCode[1] + addStr + shopCode.substr(1, 3);
+          }
+          return splited_val;
         } else {
           return null;
         }
@@ -116,7 +120,7 @@ const formatMainData = (dataString, keyCnt, valCnt, delIndex) => {
   const { key: key, value: value } = key_value(dataArry);
 
   const keys = key.filter((_, i) => delIndex.indexOf(i) < 0);
-
+  
   let dictList = [];
   value.forEach(vals => {
     const dict = new Map();
@@ -125,6 +129,7 @@ const formatMainData = (dataString, keyCnt, valCnt, delIndex) => {
     });
     dictList.push(dict);
   })
+  
 
   return dictList;
 }
@@ -137,7 +142,7 @@ const createMailMessage = (dataList) => {
   dataList.forEach((d, i) => {
     if (d.get('商品名')) {
       const col = document.createElement('div')
-      col.setAttribute('class', 'col-6 form-floating');
+      col.setAttribute('class', 'col-6 form-floating mail-container');
       col.setAttribute('style', 'text-align:center;');
       const headeing = document.createElement('a');
       headeing.setAttribute('class', 'badge bg-secondary outlined fs-3');
@@ -164,9 +169,7 @@ const createMailMessage = (dataList) => {
       textArea.setAttribute("cols", "50");
       textArea.setAttribute("rows", "15");
       const shopCode = getshopCodes().get(d.get("店舗Ｎｏ"));
-      const contents = `${startMsg}\n\n${d.get("ＪＡＮ") || 'JAN不明'} ${d.get("商品名")} ${d.get('容量')}\n上記商品を${d.get("必要本数")　|| ' ■'}本\n\n${shopCode || '■'}店より問い合わせがございました。\n\n${lastMsg}`;
-      // const contents = `${startMsg}\n\n【JAN】 ${d.get("ＪＡＮ")}\n【商品名】 ${d.get("商品名")}\n【容量】 ${d.get('容量')}\n【必要数】 ${d.get("必要本数")}本\n\n${shopCode}店より上記内容で問い合わせがございました。\n\n${lastMsg}`;
-      // const contents = `${startMsg}\n\nカテゴリ: ${d.get('カテゴリ')}\nJAN: ${d.get("ＪＡＮ")}\n商品名: ${d.get("商品名")}\n容量: ${d.get('容量')}\n必要数: ${d.get("必要本数")}本\n店舗名: ${shopCode}\n\n上記内容で問い合わせがございました。\n\n${lastMsg}`;
+      const contents = `${startMsg}\n\n${d.get("ＪＡＮ") || 'JAN不明'} ${d.get('"メーカー')} ${d.get("商品名")} ${d.get('容量')}\n上記商品を${d.get("必要本数")　|| ' ■'}本\n\n${shopCode || '■'}店より問い合わせがございました。\n\n${lastMsg}`;
       textArea.textContent = contents;
       const adress = `sumple@test.com`
       const subject = `商品のお問い合わせ(${d.get('商品名')})`
@@ -196,14 +199,15 @@ document.getElementById('changeMsg')
     const lMsg = document.getElementById('lastMsg').value;
     localStorage.setItem('csvsystem_startMsg', sMsg);
     localStorage.setItem('csvsystem_lastMsg', lMsg);
-    console.log(sMsg);
   });
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("startMsg").value = localStorage.getItem("csvsystem_startMsg");
   document.getElementById("lastMsg").value = localStorage.getItem("csvsystem_lastMsg");
   const shopCode = getshopCodes();
-  createShopCodeDOM(shopCode);
+  if (shopCode) {
+    createShopCodeDOM(shopCode);
+  };
   const { code1: code1, code2: code2 } = createCharaSelecter(localStorage.getItem("csvsystem_characode"));
   chara.appendChild(code1);
   chara.appendChild(code2);
@@ -277,3 +281,19 @@ const initElements = (...args) => {
   });
 };
 
+
+//searchboxの処理
+document.getElementById('masterContainerCloseBtn').addEventListener('click', e => {
+  document.getElementById('navbarSupportedContent')
+    .classList.remove('show');
+})
+
+//master検索の処理
+document.getElementById('navSearchBtn')
+  .addEventListener('click', e => {
+    console.log(masterData);
+    const word = document.getElementById('masterSearchbox').value;
+    console.log(word);
+    const resultContainer = document.getElementById('result');
+    searchDB(word, resultContainer);
+})

@@ -15,33 +15,63 @@
   
   <div class="container-fulid">
   
-    <div class="container-fulid">
-
       <div class="row">
-        <div class="col">
-          <nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
-            <span class="navbar-brand">らくらくお客様の声</span>
-            <div class="btn-group">
-              <button class="navbtn btn btn-success rounded"
-              data-bs-toggle="modal" data-bs-target="#shopcodeModal"
-              >店舗情報</button>
-              <button class="navbtn btn btn-danger rounded"
-              data-bs-toggle="modal" data-bs-target="#masterModal"
-              >マスターを登録する</button>
-              <button 
-              class="navbtn btn rounded  text-light" data-bs-toggle="modal" data-bs-target="#settingModal">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-three-dots"
-                viewBox="0 0 16 16">
-                <path
-                  d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-              </svg>
-            </button>
-            </div>
+          <nav class="navbar navbar-dark bg-dark d-flex topnav justify-content-between">
+              <div class="col-4">
+                <span class="navbar-brand"><a href="">らくらくお客様の声</a></span>
+              </div>
+              <div class="col-7" style="text-align: end;">
+                <div class="btn-group">
+                  <button class="navbtn btn btn-success rounded" data-bs-toggle="modal" data-bs-target="#shopcodeModal">店舗情報</button>
+                  <button class="navbtn btn btn-danger rounded" data-bs-toggle="modal"
+                    data-bs-target="#masterModal">マスター読込</button>
+                  <div class="form-inline d-flex">
+                    <input class="form-control mr-sm-2 bg-light border-0"  placeholder="Search" aria-label="Search" id="masterSearchbox"
+                    data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            
+                    >
+                    <button class="nav-search-btn btn btn-light my-2 my-sm-0" id="navSearchBtn" >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+                      viewBox="0 0 16 16">
+                      <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-1">
+                <button class="navbtn btn rounded  text-light" style="    text-align: inherit;" data-bs-toggle="modal" data-bs-target="#settingModal">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-three-dots"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                  </svg>
+                </button>
+              </div>           
           </nav>
-        </div>
+
+          <nav class="navbar navbar-dark bg-dark" style="height: 0;z-index: 1;">
+              <div class="collapse navbar-collapse" 
+              id="navbarSupportedContent">
+                <div class="bg-light border-bottom" style="height: 370px; width: 100vw;">
+                  <table class="table table-hover" id="result" style="color: rgb(148, 154, 160);">
+                  <!-- AS search reult here! -->
+                  </table>
+                  <div class="btn btn-light masterContainerCloseBtn" id="masterContainerCloseBtn"
+                  style="position: absolute;top: 1960%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-arrow-bar-up"
+                      viewBox="0 0 16 16">
+                      <path fill-rule="evenodd"
+                        d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+          </nav>
+
       </div>
       
-    </div>
 
   
 

@@ -1,14 +1,16 @@
 a {
   text-decoration: none;
+  /* color: white; */
   cursor: pointer;
 }
-/* 
-a:hover {
-  color: white;
-} */
 
-.navbar {
-  height: 80px;
+a:link, a:visited, a:hover, a:active {
+  color: white;
+}
+
+.topnav {
+  height: 60px;
+  padding-top: 18px;
 }
 
 .navbar-brand {
@@ -16,8 +18,33 @@ a:hover {
 }
 
 .navbtn {
-  margin: 0 15px;;
+  margin: 0 15px;
+  width: 90px;
+  /* height: 1px; */
+  font-size: 14px;
+  padding: 1px;
 }
+
+.nav-search-btn {
+  margin-left: -10px;
+}
+
+#result {
+  display: block;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+#masterContainerCloseBtn {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: .5s;
+}
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
 
 .form-select {
   font-size: 8px;
@@ -71,4 +98,8 @@ a:hover {
 #results {
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.mail-container:last-child {
+  margin-bottom: 200px;
 }
