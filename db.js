@@ -56,6 +56,7 @@ const insertDB_masterData = (dataList) => {
 }
 
 const searchDB = (tage, dom) => {
+  if (!tage) return;
   const dbRequest = indexedDB.open(dbName);
   dbRequest.onsuccess = (e) => {
     console.log("db open success");
@@ -87,10 +88,20 @@ const searchDB = (tage, dom) => {
           console.log('数字以外なので変数を検索するよ');
           console.log(tage);
           console.log(masterData);
-          masterData.forEach((d, i) => {
-            if (d.商品名.includes(tage)) {
-              console.log(d.コード +': ' + d.商品名);
+          const limit = 10;
+          let itemCodeList = [];
+          for (let i = 0; i < masterData.length; i++) {
+            if (itemCodeList.length === limit) break;
+            if (masterData[i].商品名.includes(tage)) {
+              console.log(masterData[i].コード + ': ' + masterData[i].商品名);
+              itemCodeList.push(masterData[i].コード);
             }
+          }
+          console.log(itemCodeList);
+          const index = store.index("codeIndex");
+          itemCodeList.forEach(item => {
+            const getreq = index.get(item);
+            createMasterTable(getreq, dom);
           })
           break;
       }
@@ -135,26 +146,51 @@ const outputSearch = (getreq, dom) => {
 const createMasterTable = (getreq, dom) => {
   getreq.onsuccess = (e) => {
     const asData = e.target.result;
+    //項目を追加
+    insertASkey.forEach(key => {
+      asData[key] = '';
+    });
+    //項目に値を追加
+    asData.税率 = taxcalc(asData.部門);
+    asData.税抜売価 = Math.ceil(asData.基本売価 / asData.税率);
+    // asData.値入率 = 1 - (asData.原価 / asData.税抜);
+    asData.粗利額 = asData.税抜売価 - asData.原価;
     const resultDict = createResultDict(asData);
     console.log(resultDict);
 
-    //table作成
-    const thead = document.createElement('thead');
-    thead.setAttribute('class', 'thead-dark');
-    const tr = document.createElement('tr');
+    //項目作成
+    const has_thead = document.getElementById('result').childElementCount;
+    if (!has_thead) {
+      const thead = document.createElement('thead');
+      thead.setAttribute('class', 'thead-dark');
+      const tr = document.createElement('tr');
+      resultDict.forEach((_, key) => {
+        const th = document.createElement('th');
+        th.textContent = key;
+        th.setAttribute('id', key);
+        tr.appendChild(th);
+      });
+      dom.appendChild(thead).appendChild(tr);
+    }
+
+    //中身作成
     const tbody = document.createElement('tbody');
     const tr_d = document.createElement('tr');
 
-    resultDict.forEach((val, key) => {
-      const th = document.createElement('th');
-      th.textContent = key;
-      tr.appendChild(th);
+    const makerColumnIndex = 4;
+    let i = 0;
+    resultDict.forEach((val, _) => {
       const td = document.createElement('td');
-      td.textContent = val;
+      if (i === makerColumnIndex) {
+        td.textContent = val.split(',')[0];
+        td.setAttribute('title', val.split(',')[1]);
+      } else {
+        td.textContent = val;
+      }
       tr_d.appendChild(td);
+      i++;
     });
 
-    dom.appendChild(thead).appendChild(tr);
     dom.appendChild(tbody).appendChild(tr_d);
     
   };
@@ -165,5 +201,15 @@ const createResultDict = (asData) => {
   needASkey.forEach((key) => {
     dict.set(key, asData[key]);
   });
+  const getTaxString = (tax) => {
+    if (tax === Number(1.1)) {
+      return '10%';
+    } else {
+      return '8%';
+    }
+  }
+  const makerName = getStorage("csvsystem_makercode").get(dict.get("メーカーコード"));
+  dict.set('メーカーコード', `${makerName.trim()},${dict.get('メーカーコード')}`)
+  dict.set('税率', getTaxString(dict.get('税率')));
   return dict;
 }

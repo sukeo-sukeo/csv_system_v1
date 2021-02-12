@@ -30,6 +30,13 @@ chara.addEventListener('change', e => {
         createMailMessage(dataList);
         return;
       };
+      // マスターフル入力
+      if (file.name.includes('マスターフル')) {
+        const { dataList: dataList, updated: updated } = formatMasterData(result);
+        document.getElementById('updated').textContent = `更新日: ${updated}`
+        insertDB_masterData(dataList);
+        return;
+      }
       // 店コード入力
       if (file.name.includes('店')) {
         const shopDict = new Map();
@@ -43,10 +50,16 @@ chara.addEventListener('change', e => {
         createShopCodeDOM(shopDict);
         return;
       }
-      // マスターフル入力
-      if (file.name.includes('マスターフル')) {
-        const { dataList: dataList, updated: updated } = formatMasterData(result);
-        insertDB_masterData(dataList);
+      // メーカーコード入力
+      if (file.name.includes('メーカー')) {
+        const makerDict = new Map();
+        result.split("\n").forEach((r) => {
+          const key = r.split(",")[0];
+          const val = r.split(",")[1];
+          makerDict.set(key, val);
+        });
+        const makerCode = JSON.stringify([...makerDict]);
+        localStorage.setItem("csvsystem_makercode", makerCode);
         return;
       }
     };
@@ -154,10 +167,9 @@ const createMailMessage = (dataList) => {
       copyBtn.setAttribute('style', 'font-size:12px;position:absolute;top:85px;right:50px;');
       copyBtn.textContent = 'copy';
       const searchBtn = document.createElement('button');
-      searchBtn.setAttribute("class", `${d.get("ＪＡＮ")|| 'JAN不明'} btn rounded-pill`);
-      searchBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="${
-        d.get("ＪＡＮ") || "JAN不明"
-      } bi bi-search" viewBox="0 0 16 16">
+      searchBtn.setAttribute("class", `${d.get("ＪＡＮ") || 'JAN不明'} btn rounded-pill`);
+      searchBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="${d.get("ＪＡＮ") || "JAN不明"
+        } bi bi-search" viewBox="0 0 16 16">
   <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
 </svg>`;
       const serachResult = document.createElement('p');
@@ -168,7 +180,7 @@ const createMailMessage = (dataList) => {
       textArea.setAttribute("class", `rounded bg-light`);
       textArea.setAttribute("cols", "50");
       textArea.setAttribute("rows", "15");
-      const shopCode = getshopCodes().get(d.get("店舗Ｎｏ"));
+      const shopCode = getStorage("csvsystem_shopcode").get(d.get("店舗Ｎｏ"));
       const contents = `${startMsg}\n\n${d.get("ＪＡＮ") || 'JAN不明'} ${d.get('"メーカー')} ${d.get("商品名")} ${d.get('容量')}\n上記商品を${d.get("必要本数")　|| ' ■'}本\n\n${shopCode || '■'}店より問い合わせがございました。\n\n${lastMsg}`;
       textArea.textContent = contents;
       const adress = `sumple@test.com`
@@ -204,7 +216,7 @@ document.getElementById('changeMsg')
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("startMsg").value = localStorage.getItem("csvsystem_startMsg");
   document.getElementById("lastMsg").value = localStorage.getItem("csvsystem_lastMsg");
-  const shopCode = getshopCodes();
+  const shopCode = getStorage("csvsystem_shopcode");
   if (shopCode) {
     createShopCodeDOM(shopCode);
   };
@@ -214,13 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
   createDB();
 });
 
-const getshopCodes = () => {
-  const tmp = localStorage.getItem("csvsystem_shopcode");
+const getStorage = (key) => {
+  const tmp = localStorage.getItem(key);
    // JSのオブジェクト形式に戻す.
   const items = JSON.parse(tmp);
    // Mapを作成する.
-  const shopCodeDict = new Map(items);
-  return shopCodeDict;
+  const dict = new Map(items);
+  return dict;
 }
 
 
@@ -292,8 +304,9 @@ document.getElementById('masterContainerCloseBtn').addEventListener('click', e =
 document.getElementById('navSearchBtn')
   .addEventListener('click', e => {
     console.log(masterData);
-    const word = document.getElementById('masterSearchbox').value;
+    const resultContainer = document.getElementById("result");
+    const word = document.getElementById("masterSearchbox").value;
+    initElements(resultContainer);
     console.log(word);
-    const resultContainer = document.getElementById('result');
     searchDB(word, resultContainer);
-})
+  })

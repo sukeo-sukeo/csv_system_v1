@@ -30,7 +30,11 @@ const needASkey = [
   "容量",
   "入数2",
   "入数",
+  "税率",
   "原価",
+  "税抜売価",
+  // "値入率",
+  "粗利額",
   "基本売価",
   "帳合",
   "分類",
@@ -40,8 +44,8 @@ const needASkey = [
   "発注終了日",
 ];
 
-//追加で表示させたいキー
-const insertASkey = ['税率', '税抜', '値入率', '値入']
+//追加項目
+const insertASkey = ['税率', '税抜売価', '粗利額']
 
 const tc_dc = {
   1: 'D',
@@ -60,11 +64,11 @@ const tax_8 = [20, 30, 40, 50, 60];
 const tax_ather = [75];
 
 const taxcalc = (category) => {
-  if (tax_8.includes(category)) {
-    return '8';
+  if (tax_8.includes(Number(category))) {
+    return 1.08;
   } else {
-    if (tax_ather.includes(category)) return '';
-    return '10';
+    if (tax_ather.includes(Number(category))) return '';
+    return 1.1;
   }
 }
 
