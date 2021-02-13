@@ -1,25 +1,38 @@
 'use strict';
 
-//問い合わせメール作成時の表示項目
-const needKeys = [
-  "コード",
-  "JAN1",
-  "帳合",
-  "原価",
-  "基本売価",
-  "TC/DC区分",
-  "商品名",
-  "部門",
-  "容量",
-  "入数", //発注単位
-  "入数2", //箱入り数
-  "メーカーコード",
-  "度数",
-  "扱区",
-  "発注終了日",
-];
+const fileInput = document.getElementsByClassName("input-tag");
+const masterInput = document.getElementById("master");
+const chara = document.getElementById("chara");
+let charaCode = localStorage.getItem("csvsystem_characode") || "utf-8";
 
-//search時の表示項目
+chara.addEventListener("change", (e) => {
+  charaCode = e.target.value;
+  localStorage.setItem("csvsystem_characode", charaCode);
+}); 
+
+//検索結果の表示件数
+const limit = 100;
+
+//問い合わせメール作成時の表示項目
+// const needKeys = [
+//   "コード",
+//   "JAN1",
+//   "帳合",
+//   "原価",
+//   "基本売価",
+//   "TC/DC区分",
+//   "商品名",
+//   "部門",
+//   "容量",
+//   "入数", //発注単位
+//   "入数2", //箱入り数
+//   "メーカーコード",
+//   "度数",
+//   "扱区",
+//   "発注終了日",
+// ];
+
+//search時の表示項目(この順番にデータが並びます)
 const needASkey = [
   "コード",
   "JAN1",
@@ -34,8 +47,8 @@ const needASkey = [
   "原価",
   "税抜売価",
   // "値入率",
-  "粗利額",
   "基本売価",
+  "粗利額",
   "帳合",
   "分類",
   "扱区",
@@ -44,12 +57,23 @@ const needASkey = [
   "発注終了日",
 ];
 
-//追加項目
+//ASにない項目(追加項目) ※needAskeyにもあわせて追加すること
 const insertASkey = ['税率', '税抜売価', '粗利額']
 
+const books = {
+  1100: '卸部',
+  1110: '秋田屋',
+  1140: '三菱食品',
+  1150: '国分',
+  1160: 'イズミック',
+  1170: '日本酒類販売',
+  9900: '共通仕入先',
+}
+
 const tc_dc = {
-  1: 'D',
-  2: 'T'
+  0: '-',
+  1: 'T',
+  2: 'D'
 }
 
 const handling = {
@@ -59,10 +83,10 @@ const handling = {
 }
 
 //軽減税率適用部門 = tax_8
-//税率がない部門 = tax_ather
 const tax_8 = [20, 30, 40, 50, 60];
+//税率がない部門 = tax_ather
 const tax_ather = [75];
-
+//部門によって税率を出し分ける処理
 const taxcalc = (category) => {
   if (tax_8.includes(Number(category))) {
     return 1.08;

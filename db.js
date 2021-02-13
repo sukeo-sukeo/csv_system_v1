@@ -24,6 +24,7 @@ const createDB = () => {
     store.getAll().onsuccess = (e) => {
       masterData = null;
       masterData = e.target.result;
+      console.log(masterData);
     }
     db.close();
   };
@@ -44,8 +45,12 @@ const insertDB_masterData = (dataList) => {
       const obj = Object.fromEntries(data);
       store.put(obj);
     });
+    store.getAll().onsuccess = (e) => {
+      masterData = null;
+      masterData = e.target.result;
+      console.log(masterData);
+    };
     alert('master updated!');
-    console.log(db);
     db.close();
   }
 
@@ -55,7 +60,7 @@ const insertDB_masterData = (dataList) => {
 
 }
 
-const searchDB = (tage, dom) => {
+const searchDB = (tage, dom = null) => {
   if (!tage) return;
   const dbRequest = indexedDB.open(dbName);
   dbRequest.onsuccess = (e) => {
@@ -63,86 +68,45 @@ const searchDB = (tage, dom) => {
     const db = e.target.result;
     const trans = db.transaction(tableName, "readonly");
     const store = trans.objectStore(tableName);
-    if (dom.id === 'result') {
-      //searchボタンのとき
-      console.log(!isNaN(tage));
-      switch (true) {
-        case !isNaN(tage):
-          //数字のとき
-          if (tage.length === 7) {
-            //７桁のときindex_codeをサーチ => index.get(tage)
-            console.log("コード検索");
-            const index = store.index("codeIndex");
-            const getreq = index.get(tage);
-            createMasterTable(getreq, dom);
-          } else {
-            //７桁じゃないときstoreをサーチ => sotre.get(tage)
-            console.log("JAN検索");
-            const getreq = store.get(tage);
-            createMasterTable(getreq, dom);
-          }
-          break;
-        default:
-          //   //文字のとき変数を検索してテーブルを作成
-          //   // createMasterTable(getreq, dom);
-          console.log('数字以外なので変数を検索するよ');
-          console.log(tage);
-          console.log(masterData);
-          const limit = 10;
-          let itemCodeList = [];
-          for (let i = 0; i < masterData.length; i++) {
-            if (itemCodeList.length === limit) break;
-            if (masterData[i].商品名.includes(tage)) {
-              console.log(masterData[i].コード + ': ' + masterData[i].商品名);
-              itemCodeList.push(masterData[i].コード);
-            }
-          }
-          console.log(itemCodeList);
+    console.log(!isNaN(tage));
+    switch (true) {
+      //数字のとき
+      case !isNaN(tage):
+        if (tage.length === 7) {
+          //７桁のときindex_codeをサーチ => index.get(tage)
+          console.log("コード検索");
           const index = store.index("codeIndex");
-          itemCodeList.forEach(item => {
-            const getreq = index.get(item);
-            createMasterTable(getreq, dom);
-          })
-          break;
-      }
-
-      console.log('dbcolose');
-      db.close();
-
-      dbRequest.onerror = (e) => {
-        console.log("db open error");
-      };
-
-    } else {
-      //簡易検索ボタンのとき
-      const getreq = store.get(tage);
-      outputSearch(getreq, dom);
-
-      db.close();
-  
-      dbRequest.onerror = (e) => {
-        console.log("db open error");
-      };
+          const getreq = index.get(tage);
+          createMasterTable(getreq, dom);
+        } else {
+          //７桁じゃないときstoreをサーチ => sotre.get(tage)
+          console.log("JAN検索");
+          const getreq = store.get(tage);
+          createMasterTable(getreq, dom);
+        }
+      break;
+      //文字のとき変数を検索してテーブルを作成
+      default:
+        //引数で配列を検索し"コード"を返す
+        const itemCodeList = createItemCodeList('商品名', tage);
+        const index = store.index("codeIndex");
+        itemCodeList.forEach(item => {
+          const getreq = index.get(item);
+          createMasterTable(getreq, dom);
+        });
+      break;
     }
+
+    console.log('dbcolose');
+    db.close();
+
+    dbRequest.onerror = (e) => {
+      console.log("db open error");
+    };
   };
 }
 
-//簡易サーチ
-const outputSearch = (getreq, dom) => {
-   getreq.onsuccess = (e) => {
-     const result = e.target.result;
-     console.log(result);
-     if (!result) {
-       dom.textContent = "該当なし";
-     } else {
-       dom.textContent = `${result["商品名"].trim()} 原価:${
-         result["原価"]
-       } 売価:${result["基本売価"]}(税込)`;
-     }
-   };
-}
-
-//しっかりサーチ
+//マスターしっかりサーチ
 const createMasterTable = (getreq, dom) => {
   getreq.onsuccess = (e) => {
     const asData = e.target.result;
@@ -208,8 +172,30 @@ const createResultDict = (asData) => {
       return '8%';
     }
   }
+  
+  //TC/DC区分コードを'T'or'D'に付け替え
+  dict.set("TC/DC区分", tc_dc[dict.get("TC/DC区分")]);
+  //帳合コードを帳合名に付け替え
+  dict.set('帳合', books[dict.get('帳合').trim()] || dict.get('帳合'));
+  //分類コードを分類名に付け替え
+  const categoryName = getStorage("csvsystem_categorycode").get(dict.get("分類"));
+  dict.set('分類', categoryName.trim());
+  //メーカーコードをメーカー名に付け替え
   const makerName = getStorage("csvsystem_makercode").get(dict.get("メーカーコード"));
   dict.set('メーカーコード', `${makerName.trim()},${dict.get('メーカーコード')}`)
+  //税率(number)を税率(string)に付け替え
   dict.set('税率', getTaxString(dict.get('税率')));
   return dict;
+}
+
+const createItemCodeList = (key, tage) => {
+  let itemCodeList = [];
+  for (let i = 0; i < masterData.length; i++) {
+    if (itemCodeList.length === limit) break;
+    if (masterData[i][key].includes(tage)) {
+      console.log(masterData[i].コード + ": " + masterData[i][key]);
+      itemCodeList.push(masterData[i].コード);
+    }
+  }
+  return itemCodeList;
 }

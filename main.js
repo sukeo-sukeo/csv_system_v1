@@ -2,16 +2,6 @@
 
 console.log('hello csv');
 
-const fileInput = document.getElementsByClassName('input-tag');
-const masterInput = document.getElementById("master");
-const chara = document.getElementById('chara');
-let charaCode = localStorage.getItem("csvsystem_characode") || 'utf-8';
-
-chara.addEventListener('change', e => {
-  charaCode = e.target.value;
-  localStorage.setItem("csvsystem_characode", charaCode);
-}); 
-
 //csv読み込み処理
 [...fileInput].forEach(input => {
   input.addEventListener("change", (e) => {
@@ -28,43 +18,52 @@ chara.addEventListener('change', e => {
         const dataList = formatMainData(result, keyCnt, valCnt, delIndex);
         console.log(dataList);
         createMailMessage(dataList);
+        // document.getElementById("navbarSupportedContent").classList.add('show');
         return;
       };
       // マスターフル入力
       if (file.name.includes('マスターフル')) {
         const { dataList: dataList, updated: updated } = formatMasterData(result);
-        document.getElementById('updated').textContent = `更新日: ${updated}`
+        localStorage.setItem('csvsystem_asupdated', updated);
+        document.getElementById("updated").textContent = `更新日: ${updated}`;
         insertDB_masterData(dataList);
         return;
       }
       // 店コード入力
       if (file.name.includes('店')) {
-        const shopDict = new Map();
-        result.split('\n').forEach(r => {
-          const key = r.split(',')[0];
-          const val = r.split(',')[1];
-          shopDict.set(key, val);
-        });
-        const shopCode = JSON.stringify([...shopDict]);
-        localStorage.setItem('csvsystem_shopcode', shopCode);
+        const cols = [0, 1];
+        const shopDict = postStorage("csvsystem_shopcode", result, cols);
         createShopCodeDOM(shopDict);
         return;
       }
       // メーカーコード入力
       if (file.name.includes('メーカー')) {
-        const makerDict = new Map();
-        result.split("\n").forEach((r) => {
-          const key = r.split(",")[0];
-          const val = r.split(",")[1];
-          makerDict.set(key, val);
-        });
-        const makerCode = JSON.stringify([...makerDict]);
-        localStorage.setItem("csvsystem_makercode", makerCode);
+        const cols = [0, 1];
+        postStorage("csvsystem_makercode", result, cols);
+        return;
+      }
+      // 分類コード入力
+      if (file.name.includes('中小分類')) {
+        const cols = [2, 3];
+        postStorage("csvsystem_categorycode", result, cols);
         return;
       }
     };
   });
 }); 
+
+const postStorage = (key, result, cols) => {
+  console.log(key);
+  const dict = new Map();
+  result.split("\n").forEach((r) => {
+    const key = r.split(",")[cols[0]];
+    const val = r.split(",")[cols[1]];
+    dict.set(key, val);
+  });
+  const dictToString = JSON.stringify([...dict]);
+  localStorage.setItem(key, dictToString);
+  return dict;
+};
 
 const formatMasterData = (dataString) => {
   const dataArry = dataString.split("\n");
@@ -77,7 +76,7 @@ const formatMasterData = (dataString) => {
     const vals = valArry.split(',');
     const dict = new Map();
     vals.forEach((val, i) => {
-      dict.set(keysArry[i], val);
+      dict.set(keysArry[i], val.trim());
     });
     masterArry.push(dict);
   });
@@ -152,7 +151,7 @@ const createMailMessage = (dataList) => {
   const lastMsg = document.getElementById("lastMsg").value;
   const results = document.getElementById('results');
   initElements(results);
-  dataList.forEach((d, i) => {
+  dataList.forEach(async (d, i) => {
     if (d.get('商品名')) {
       const col = document.createElement('div')
       col.setAttribute('class', 'col-6 form-floating mail-container');
@@ -164,17 +163,24 @@ const createMailMessage = (dataList) => {
       const copyBtn = document.createElement('button');
       copyBtn.setAttribute("id", `copy_${i}`);
       copyBtn.setAttribute('class', 'btn btn-outline-dark rounded-pill');
-      copyBtn.setAttribute('style', 'font-size:12px;position:absolute;top:85px;right:50px;');
+      copyBtn.setAttribute('style', 'font-size:12px;position:absolute;top:60px;right:50px;');
       copyBtn.textContent = 'copy';
       const searchBtn = document.createElement('button');
+      // searchBtn.setAttribute("class", "miniSearchBtn");
+      searchBtn.setAttribute('data-bs-toggle', 'collapse');
+      searchBtn.setAttribute("data-bs-target", "#navbarSupportedContent");
+      searchBtn.setAttribute("aria-controls", "navbarSupportedContent");
+      searchBtn.setAttribute("aria-expanded", "false");
+      searchBtn.setAttribute("aria-label", "Toggle navigation");
       searchBtn.setAttribute("class", `${d.get("ＪＡＮ") || 'JAN不明'} btn rounded-pill`);
-      searchBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="${d.get("ＪＡＮ") || "JAN不明"
-        } bi bi-search" viewBox="0 0 16 16">
+      searchBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="${
+        d.get("ＪＡＮ") || "JAN不明"
+      } bi bi-search miniSearchBtn" viewBox="0 0 16 16">
   <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
 </svg>`;
-      const serachResult = document.createElement('p');
-      serachResult.setAttribute('style', 'text-align:center;margin-bottom:0px;height:25px;font-size:12px;');
-      searchBtn.addEventListener('click', e => searchDB(e.target.classList[0], serachResult)); 
+      // const serachResult = document.createElement('table');
+      // serachResult.setAttribute('class', 'table')
+      // serachResult.setAttribute('style', 'text-align:center;margin-bottom:0px;height:25px;font-size:12px;'); 
       const textArea = document.createElement('textarea');
       textArea.setAttribute("id", `mail_${i}`);
       textArea.setAttribute("class", `rounded bg-light`);
@@ -183,15 +189,25 @@ const createMailMessage = (dataList) => {
       const shopCode = getStorage("csvsystem_shopcode").get(d.get("店舗Ｎｏ"));
       const contents = `${startMsg}\n\n${d.get("ＪＡＮ") || 'JAN不明'} ${d.get('"メーカー')} ${d.get("商品名")} ${d.get('容量')}\n上記商品を${d.get("必要本数")　|| ' ■'}本\n\n${shopCode || '■'}店より問い合わせがございました。\n\n${lastMsg}`;
       textArea.textContent = contents;
-      const adress = `sumple@test.com`
-      const subject = `商品のお問い合わせ(${d.get('商品名')})`
-      const mailto = `mailto:${adress}?subject=${subject}&amp;body=${contents}`
+      const factoryMailto = async (contents) => {
+        return await createMailto(d, contents).then((res) => res);
+      }
+      const mailto = await factoryMailto(contents);
+      console.log(mailto);
       headeing.setAttribute('href', mailto);
       results.appendChild(col).appendChild(textArea);
       col.insertBefore(headeing, textArea);
       col.insertBefore(copyBtn, textArea);
       col.insertBefore(searchBtn, textArea);
-      col.insertBefore(serachResult, textArea);
+      // col.insertBefore(serachResult, textArea);
+      searchBtn.addEventListener("click", (e) => {
+        const resultContainer = document.getElementById("result");
+        initElements(resultContainer);
+        searchDB(e.target.classList[0], resultContainer);
+        
+        document.getElementById('masterSearchbox').setAttribute("data-bs-toggle", "");
+        searchBtn.setAttribute("data-bs-toggle", "");
+      });
      
       copyBtn.addEventListener('click', e => {
         textArea.select();
@@ -205,6 +221,7 @@ const createMailMessage = (dataList) => {
   });
 }
 
+//文章の登録
 document.getElementById('changeMsg')
   .addEventListener('click', e => {
     const sMsg = document.getElementById('startMsg').value;
@@ -213,18 +230,86 @@ document.getElementById('changeMsg')
     localStorage.setItem('csvsystem_lastMsg', lMsg);
   });
 
+  //アドレスの登録
+document.getElementById('saveAdress')
+  .addEventListener('click', e => {
+    const adressContainer = document.getElementById('adressContainer');
+    const dict = new Map();
+    [...adressContainer.childNodes].forEach(node => {
+      if (node.tagName === 'INPUT') {
+        dict.set(node.id.split('_')[1] ,node.value);
+      }
+    });
+    const adress = JSON.stringify([...dict]);
+    localStorage.setItem('csvsystem_adress', adress);
+  });
+
+
 document.addEventListener('DOMContentLoaded', () => {
+  //マスター登録日の呼び出し
+   document.getElementById(
+     "updated"
+   ).textContent = `更新日: ${localStorage.getItem("csvsystem_asupdated") || '未登録'}`;
+  //文章の呼び出し
   document.getElementById("startMsg").value = localStorage.getItem("csvsystem_startMsg");
   document.getElementById("lastMsg").value = localStorage.getItem("csvsystem_lastMsg");
+  //店コードの呼び出し
   const shopCode = getStorage("csvsystem_shopcode");
   if (shopCode) {
     createShopCodeDOM(shopCode);
   };
+  //文字コードの呼び出し
   const { code1: code1, code2: code2 } = createCharaSelecter(localStorage.getItem("csvsystem_characode"));
   chara.appendChild(code1);
   chara.appendChild(code2);
+  //アドレスの呼び出し
+  const adress = getStorage("csvsystem_adress");
+  const adressContainer = document.getElementById("adressContainer");
+  adress.forEach((val, key) => {
+    [...adressContainer.childNodes].forEach(node => {
+      if (node.id) {
+        if (key === node.id.split('_')[1]) {
+          node.value = val;
+        }
+      }
+    })
+  })
   createDB();
 });
+
+const createMailto = async (d, contents) => {
+  const adress = await getAdress(d.get("ＪＡＮ")).then((res) => res);
+  console.log(adress);
+  const subject = `商品のお問い合わせ(${d.get("商品名")})`;
+  const mailto = `mailto:${adress}?subject=${subject}&body=${contents}`;
+  return mailto;
+}
+
+//JANでマスター検索→帳合コードを取得→storageを取得して帳合コードと合致するadressを返却
+const getAdress = async (jan) => {
+
+  const promise = new Promise((resolve, reject) => {
+    const dbRequest = indexedDB.open(dbName);
+
+    dbRequest.onsuccess = (e) => {
+      console.log("db open success");
+      const db = e.target.result;
+      const trans = db.transaction(tableName, "readonly");
+      const store = trans.objectStore(tableName);
+      const index = store.index("codeIndex");
+      const item = createItemCodeList("JAN1", jan.trim());
+      index.get(item[0]).onsuccess = (e) => {
+        const data = e.target.result
+        const adressDict = getStorage("csvsystem_adress");
+        console.log(adressDict);
+        const adress = adressDict.get('1140') || '';
+        resolve(adress);
+      }
+    };
+  });
+  const adress = await promise;
+  return adress;
+}
 
 const getStorage = (key) => {
   const tmp = localStorage.getItem(key);
@@ -285,6 +370,12 @@ const createShopCodeDOM = (shopCodeDict) => {
   });
 }
 
+// document.getElementById('')
+
+// const createAdressDOM = () => {
+
+// }
+
 const initElements = (...args) => {
   args.forEach((arg) => {
     while (arg.firstChild) {
@@ -294,11 +385,22 @@ const initElements = (...args) => {
 };
 
 
-//searchboxの処理
+//検索結果コンテナーを閉じる処理
 document.getElementById('masterContainerCloseBtn').addEventListener('click', e => {
   document.getElementById('navbarSupportedContent')
     .classList.remove('show');
+  document
+    .getElementById("masterSearchbox")
+    .setAttribute("data-bs-toggle", "collapse");
 })
+
+//検索結果コンテナーを閉じないようにする処理
+document.getElementById("masterSearchbox")
+  .addEventListener('click', e => {
+    const searchbox = e.target;
+    // console.log(searchbox.getAttribute());
+    searchbox.setAttribute("data-bs-toggle", '');
+  });
 
 //master検索の処理
 document.getElementById('navSearchBtn')
@@ -310,3 +412,5 @@ document.getElementById('navSearchBtn')
     console.log(word);
     searchDB(word, resultContainer);
   })
+
+  
