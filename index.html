@@ -118,19 +118,15 @@
               文章の設定
             </button>
             <ul class="dropdown-menu" aria-labelledby="setting_message">
-              <div class="col-5">
-                <div class="row d-flex">
-                  <div class="col d-flex justify-content-between">
-                    <label for="starMsg">書き出しの文章</label>
-                  </div>
-                </div>
-                <textarea name="startMsg" id="startMsg" cols="50" rows="5"></textarea>
-                <div class="row d-flex">
-                  <div class="col d-flex justify-content-between">
-                    <label for="lastMsg">結びの文章</label>
-                  </div>
-                </div>
-                <textarea name="lastMsg" id="lastMsg" cols="50" rows="5"></textarea>
+              <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="startMsg" name="startMsg"
+                  style="height: 150px; width: 100%;"></textarea>
+                <label for="startMsg">書き出しの文章</label>
+              </div>
+              <div class="form-floating">
+                <textarea class="form-control" placeholder="Leave a comment here" id="lastMsg" name="lastMsg"
+                  style="height: 150px; width: 100%;"></textarea>
+                <label for="lastMsg">結びの文書</label>
               </div>
               <button type="button" class="btn btn-primary" id="changeMsg">Save changes</button>
             </ul>

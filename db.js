@@ -24,7 +24,7 @@ const createDB = () => {
     store.getAll().onsuccess = (e) => {
       masterData = null;
       masterData = e.target.result;
-      console.log(masterData);
+      // console.log(masterData);
     }
     db.close();
   };
@@ -193,7 +193,7 @@ const createItemCodeList = (key, tage) => {
   for (let i = 0; i < masterData.length; i++) {
     if (itemCodeList.length === limit) break;
     if (masterData[i][key].includes(tage)) {
-      console.log(masterData[i].コード + ": " + masterData[i][key]);
+      // console.log(masterData[i].コード + ": " + masterData[i][key]);
       itemCodeList.push(masterData[i].コード);
     }
   }
