@@ -48,9 +48,10 @@ const insertDB_masterData = (dataList) => {
     store.getAll().onsuccess = (e) => {
       masterData = null;
       masterData = e.target.result;
-      console.log(masterData);
+      // console.log(masterData);
     };
     alert('master updated!');
+    document.getElementById("csvinput").innerHTML = defaultMessage;
     db.close();
   }
 

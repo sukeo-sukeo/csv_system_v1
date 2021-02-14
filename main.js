@@ -26,6 +26,7 @@ console.log('hello csv');
         const { dataList: dataList, updated: updated } = formatMasterData(result);
         localStorage.setItem('csvsystem_asupdated', updated);
         document.getElementById("updated").textContent = `更新日: ${updated}`;
+        document.getElementById('csvinput').innerHTML = loader;
         insertDB_masterData(dataList);
         return;
       }
