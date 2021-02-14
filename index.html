@@ -111,51 +111,65 @@
         </div>
         <div class="modal-body">
 
-          <!-- 文章の設定ドロップダウン -->
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="setting_message" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              文章の設定
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="setting_message">
-              <div class="form-floating">
-                <textarea class="form-control" placeholder="Leave a comment here" id="startMsg" name="startMsg"
-                  style="height: 150px; width: 100%;"></textarea>
-                <label for="startMsg">書き出しの文章</label>
-              </div>
-              <div class="form-floating">
-                <textarea class="form-control" placeholder="Leave a comment here" id="lastMsg" name="lastMsg"
-                  style="height: 150px; width: 100%;"></textarea>
-                <label for="lastMsg">結びの文書</label>
-              </div>
-              <button type="button" class="btn btn-primary" id="changeMsg">Save changes</button>
-            </ul>
-          </div>
-          <!-- モーダル閉じるときの属性 -->
-<!-- data-bs-dismiss="modal" -->
-          <!-- アドレスの登録ドロップダウン -->
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="setting_adress" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              アドレスの登録
-            </button>
-            <ul class="dropdown-menu w-100 p-5" aria-labelledby="setting_adress" id="adressContainer">
-              <label for="akitaya_1110" class="form-label">秋田屋</label>
-              <input type="email" class="form-control" id="akitaya_1110" placeholder="name@example.com">
-              <label for="mitubishi_1140" class="form-label">三菱食品</label>
-              <input type="email" class="form-control" id="mitubishi_1140" placeholder="name@example.com">
-              <label for="kokubu_1150" class="form-label">国分</label>
-              <input type="email" class="form-control" id="kokubu_1150" placeholder="name@example.com">
-              <label for="izumic_1160" class="form-label">イズミック</label>
-              <input type="email" class="form-control" id="izumic_1160" placeholder="name@example.com">
-              <button type="button" class="btn btn-primary" id="saveAdress">Save changes</button>
-            </ul>
+          <!-- 設定タブメニュー -->
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active text-dark" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home"
+                aria-selected="true">文章の設定</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link text-dark" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                aria-selected="false">アドレスの登録</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link text-dark" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+                aria-selected="false">...any more(準備中)</a>
+            </li>
+          </ul>
+          <!-- タブの中身 -->
+          <div class="tab-content" id="myTabContent">
+            <!-- 文章の設定 -->
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+              <ul class="w-100 p-3" aria-labelledby="setting_message">
+                <div class="form-floating">
+                  <textarea class="form-control" placeholder="Leave a comment here" id="startMsg" name="startMsg"
+                    style="height: 150px"></textarea>
+                  <label for="startMsg">書き出しの文章</label>
+                </div>
+                <div class="form-floating mt-3">
+                  <textarea class="form-control" placeholder="Leave a comment here" id="lastMsg" name="lastMsg"
+                    style="height: 150px;"></textarea>
+                  <label for="lastMsg">結びの文書</label>
+                </div>
+                <button type="button" class="btn btn-secondary mt-3 float-end" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary mt-3 me-2 float-end" data-bs-dismiss="modal" id="changeMsg">保存</button>
+              </ul>
+            </div>
+            <!-- アドレスの登録 -->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+              <ul class="w-100 p-3" aria-labelledby="setting_adress" id="adressContainer">
+                <label for="akitaya_1110" class="form-label">秋田屋</label>
+                <input type="email" class="form-control" id="akitaya_1110" placeholder="name@example.com">
+                <label for="mitubishi_1140" class="form-label">三菱食品</label>
+                <input type="email" class="form-control" id="mitubishi_1140" placeholder="name@example.com">
+                <label for="kokubu_1150" class="form-label">国分</label>
+                <input type="email" class="form-control" id="kokubu_1150" placeholder="name@example.com">
+                <label for="izumic_1160" class="form-label">イズミック</label>
+                <input type="email" class="form-control" id="izumic_1160" placeholder="name@example.com">
+                <button type="button" class="btn btn-secondary mt-3 float-end" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary mt-3 me-2 float-end" data-bs-dismiss="modal" id="saveAdress">保存</button>
+              </ul>
+            </div>
+            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <p>準備中です</p>
+            </div>
           </div>
 
         </div>
-        <div class="modal-footer">
+
+        <!-- <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
