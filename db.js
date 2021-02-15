@@ -69,7 +69,6 @@ const searchDB = (tage, dom = null) => {
     const db = e.target.result;
     const trans = db.transaction(tableName, "readonly");
     const store = trans.objectStore(tableName);
-    console.log(!isNaN(tage));
     switch (true) {
       //数字のとき
       case !isNaN(tage):
@@ -89,6 +88,7 @@ const searchDB = (tage, dom = null) => {
       //文字のとき変数を検索してテーブルを作成
       default:
         //引数で配列を検索し"コード"を返す
+        console.log('商品名検索');
         const itemCodeList = createItemCodeList('商品名', tage);
         const index = store.index("codeIndex");
         itemCodeList.forEach(item => {
@@ -121,7 +121,6 @@ const createMasterTable = (getreq, dom) => {
     // asData.値入率 = 1 - (asData.原価 / asData.税抜);
     asData.粗利額 = asData.税抜売価 - asData.原価;
     const resultDict = createResultDict(asData);
-    console.log(resultDict);
 
     //項目作成
     const has_thead = document.getElementById('result').childElementCount;

@@ -16,7 +16,6 @@ console.log('hello csv');
         const valCnt = [8, 19];  
         const delIndex = [0, 7, 8, 12, 13, 16, 20, 25, 27, 30];
         const dataList = formatMainData(result, keyCnt, valCnt, delIndex);
-        console.log(dataList);
         createMailMessage(dataList);
         // document.getElementById("navbarSupportedContent").classList.add('show');
         return;
@@ -54,7 +53,6 @@ console.log('hello csv');
 }); 
 
 const postStorage = (key, result, cols) => {
-  console.log(key);
   const dict = new Map();
   result.split("\n").forEach((r) => {
     const key = r.split(",")[cols[0]];
@@ -158,6 +156,11 @@ const createMailMessage = (dataList) => {
       col.setAttribute('class', 'col-6 form-floating mail-container');
       col.setAttribute('style', 'text-align:center;');
       const headeing = document.createElement('a');
+      // テスト
+      const headeing_sub = document.createElement('a');
+      headeing_sub.textContent = 'decodeテスト'
+      headeing_sub.setAttribute('style', 'margin-bottom: 5px;color:black;');
+      // テスト終わり
       headeing.setAttribute('class', 'badge bg-secondary outlined fs-3');
       headeing.setAttribute('style', 'margin-bottom: 5px;');
       headeing.innerHTML = `${d.get('件')}件目${icon_mail}`
@@ -194,10 +197,11 @@ const createMailMessage = (dataList) => {
         return await createMailto(d, contents).then((res) => res);
       }
       const mailto = await factoryMailto(contents);
-      console.log(mailto);
-      headeing.setAttribute('href', mailto);
+      headeing.setAttribute('href', encodeURI(mailto));
+      headeing_sub.setAttribute('href', decodeURI(mailto));
       results.appendChild(col).appendChild(textArea);
       col.insertBefore(headeing, textArea);
+      col.insertBefore(headeing_sub, textArea);
       col.insertBefore(copyBtn, textArea);
       col.insertBefore(searchBtn, textArea);
       // col.insertBefore(serachResult, textArea);
@@ -280,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const createMailto = async (d, contents) => {
   const adress = await getAdress(d.get("ＪＡＮ")).then((res) => res);
-  console.log(adress);
   const subject = `商品のお問い合わせ(${d.get("商品名")})`;
   const mailto = `mailto:${adress}?subject=${subject}&body=${contents}`;
   return mailto;
@@ -302,8 +305,7 @@ const getAdress = async (jan) => {
       index.get(item[0]).onsuccess = (e) => {
         const data = e.target.result
         const adressDict = getStorage("csvsystem_adress");
-        console.log(adressDict);
-        const adress = adressDict.get('1140') || '';
+        const adress = adressDict.get(data) || '';
         resolve(adress);
       }
     };
@@ -399,18 +401,15 @@ document.getElementById('masterContainerCloseBtn').addEventListener('click', e =
 document.getElementById("masterSearchbox")
   .addEventListener('click', e => {
     const searchbox = e.target;
-    // console.log(searchbox.getAttribute());
     searchbox.setAttribute("data-bs-toggle", '');
   });
 
 //master検索の処理
 document.getElementById('navSearchBtn')
   .addEventListener('click', e => {
-    console.log(masterData);
     const resultContainer = document.getElementById("result");
     const word = document.getElementById("masterSearchbox").value;
     initElements(resultContainer);
-    console.log(word);
     searchDB(word, resultContainer);
   })
 
