@@ -11,7 +11,7 @@ console.log('hello csv');
     fileReader.onload = (e) => {
       const result = e.target.result;
       // お客様の声入力
-      if (file.name.includes('お客様の声')) {
+      if (file.name.includes('お客様')) {
         const keyCnt = 9;  
         const valCnt = [8, 19];  
         const delIndex = [0, 7, 8, 12, 13, 16, 20, 25, 27, 30];
@@ -29,13 +29,6 @@ console.log('hello csv');
         insertDB_masterData(dataList);
         return;
       }
-      // 店コード入力
-      if (file.name.includes('店')) {
-        const cols = [0, 1];
-        const shopDict = postStorage("csvsystem_shopcode", result, cols);
-        createShopCodeDOM(shopDict);
-        return;
-      }
       // メーカーコード入力
       if (file.name.includes('メーカー')) {
         const cols = [0, 1];
@@ -46,6 +39,13 @@ console.log('hello csv');
       if (file.name.includes('中小分類')) {
         const cols = [2, 3];
         postStorage("csvsystem_categorycode", result, cols);
+        return;
+      }
+      // 店コード入力
+      if (file.name.includes('店')) {
+        const cols = [0, 1];
+        const shopDict = postStorage("csvsystem_shopcode", result, cols);
+        createShopCodeDOM(shopDict);
         return;
       }
     };

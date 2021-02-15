@@ -122,6 +122,10 @@
                 aria-selected="false">アドレスの登録</a>
             </li>
             <li class="nav-item" role="presentation">
+              <a class="nav-link text-dark" id="import-tab" data-bs-toggle="tab" href="#import" role="tab" aria-controls="import"
+                aria-selected="false">csvインポート</a>
+            </li>
+            <li class="nav-item" role="presentation">
               <a class="nav-link text-dark" id="contact-tab" data-bs-toggle="tab" href="#contact" role="tab" aria-controls="contact"
                 aria-selected="false">...any more(準備中)</a>
             </li>
@@ -130,6 +134,7 @@
           <div class="tab-content" id="myTabContent">
             <!-- 文章の設定 -->
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+              <p class="text-center text-secondary mt-3">メール本文作成をサポートします</p>
               <ul class="w-100 p-3" aria-labelledby="setting_message">
                 <div class="form-floating">
                   <textarea class="form-control" placeholder="Leave a comment here" id="startMsg" name="startMsg"
@@ -147,6 +152,7 @@
             </div>
             <!-- アドレスの登録 -->
             <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+              <p class="text-center text-secondary mt-3 mb-0">メール作成時のアドレス入力をサポートします</p>
               <ul class="w-100 p-3" aria-labelledby="setting_adress" id="adressContainer">
                 <label for="akitaya_1110" class="form-label">秋田屋</label>
                 <input type="email" class="form-control" id="akitaya_1110" placeholder="name@example.com">
@@ -160,8 +166,22 @@
                 <button type="button" class="btn btn-primary mt-3 me-2 float-end" data-bs-dismiss="modal" id="saveAdress">保存</button>
               </ul>
             </div>
+            <!-- 各種CSVインポート -->
+            <div class="tab-pane fade" id="import" role="tabpanel" aria-labelledby="import-tab">
+              <p class="text-center text-secondary mt-3 mb-0">CSVファイルをインポートすることで表示がわかりやすくなります</p>
+              <p class="text-center text-secondary my-0">「メーカー名」「中小分類」「店コード」</p>
+                <div class="card rounded bg-light input-area mx-auto my-3">
+                  <div class="card-text drop-text" id="csvinput">
+                    please drag & drop <span>CSV!</span>
+                  </div>
+                  <input type="file" id="master" accept=".csv,.txt" class="bg-light input-tag">
+                  <span class="card-title bg-primary input-pointer">
+                    CSVを読み込む
+                  </span>
+                </div>
+            </div>
             <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                <p>準備中です</p>
+                <p class="text-center text-secondary mt-3">準備中です</p>
             </div>
           </div>
 
