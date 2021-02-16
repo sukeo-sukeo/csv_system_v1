@@ -157,9 +157,9 @@ const createMailMessage = (dataList) => {
       col.setAttribute('style', 'text-align:center;');
       const headeing = document.createElement('a');
       // テスト
-      const headeing_sub = document.createElement('a');
-      headeing_sub.textContent = 'decodeテスト'
-      headeing_sub.setAttribute('style', 'margin-bottom: 5px;color:black;');
+      // const headeing_sub = document.createElement('a');
+      // headeing_sub.textContent = 'decodeテスト'
+      // headeing_sub.setAttribute('style', 'margin-bottom: 5px;color:black;');
       // テスト終わり
       headeing.setAttribute('class', 'badge bg-secondary outlined fs-3');
       headeing.setAttribute('style', 'margin-bottom: 5px;');
@@ -198,7 +198,7 @@ const createMailMessage = (dataList) => {
       }
       const mailto = await factoryMailto(contents);
       headeing.setAttribute('href', encodeURI(mailto));
-      headeing_sub.setAttribute('href', decodeURI(mailto));
+      // headeing_sub.setAttribute('href', decodeURI(mailto));
       results.appendChild(col).appendChild(textArea);
       col.insertBefore(headeing, textArea);
       col.insertBefore(headeing_sub, textArea);

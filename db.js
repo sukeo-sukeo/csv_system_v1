@@ -76,12 +76,12 @@ const searchDB = (tage, dom = null) => {
           //７桁のときindex_codeをサーチ => index.get(tage)
           console.log("コード検索");
           const index = store.index("codeIndex");
-          const getreq = index.get(tage);
+          const getreq = index.get(tage.trim());
           createMasterTable(getreq, dom);
         } else {
           //７桁じゃないときstoreをサーチ => sotre.get(tage)
           console.log("JAN検索");
-          const getreq = store.get(tage);
+          const getreq = store.get(tage.trim());
           createMasterTable(getreq, dom);
         }
       break;
