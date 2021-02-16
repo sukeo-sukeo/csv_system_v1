@@ -201,7 +201,7 @@ const createMailMessage = (dataList) => {
       // headeing_sub.setAttribute('href', decodeURI(mailto));
       results.appendChild(col).appendChild(textArea);
       col.insertBefore(headeing, textArea);
-      col.insertBefore(headeing_sub, textArea);
+      // col.insertBefore(headeing_sub, textArea);
       col.insertBefore(copyBtn, textArea);
       col.insertBefore(searchBtn, textArea);
       // col.insertBefore(serachResult, textArea);
