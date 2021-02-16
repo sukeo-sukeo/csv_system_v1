@@ -31,7 +31,7 @@ a:link, a:visited, a:hover, a:active {
 
 #result {
   display: block;
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
   white-space: nowrap;
 }
 
