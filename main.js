@@ -37,7 +37,7 @@ console.log('hello csv');
       }
       // 分類コード入力
       if (file.name.includes('中小分類')) {
-        const cols = [2, 3];
+        const cols = [3, 4];
         postStorage("csvsystem_categorycode", result, cols);
         return;
       }
