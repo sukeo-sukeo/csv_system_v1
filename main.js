@@ -284,10 +284,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const createMailto = async (d, contents) => {
   let adress = await getAdress(d.get("ＪＡＮ")).then((res) => res);
-  if (!adress) adress = 'ごめん！自分で入れてね！（未登録か共通仕入先です）'
+  if (!adress) adress = encodeURI('ごめん！自分で入れてね！（未登録か共通仕入先です）')
 
-  const subject = `商品のお問い合わせ(${d.get("商品名")})`;
-  const mailto = `mailto:${adress}?subject=${subject}&body=${contents}`;
+  const subject = encodeURI(`商品のお問い合わせ(${d.get("商品名")})`);
+  const mailto = encodeURI(`mailto:${adress}?subject=${subject}&body=${contents}`);
   return mailto;
 }
 
